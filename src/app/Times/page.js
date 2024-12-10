@@ -3,15 +3,15 @@
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Row } from 'react-bootstrap'
-import { FaUmbrellaBeach, FaEnvelope, FaPhone, FaIdCard, FaMapMarkerAlt, FaBirthdayCake, FaEdit, FaTrash, FaPlus } from 'react-icons/fa'
+import { FaFootballBall, FaEdit, FaTrash, FaPlus } from 'react-icons/fa'
 import Pagina from '../components/Pagina'
 import Swal from 'sweetalert2'
 
-export default function Visitantes() {
-    const [visitantes, setVisitantes] = useState([])
+export default function Times() {
+    const [times, setTimes] = useState([])
 
     useEffect(() => {
-        setVisitantes(JSON.parse(localStorage.getItem('visitantes')) || [])
+        setTimes(JSON.parse(localStorage.getItem('Times')) || [])  // Alterado para 'Times' com 'T' maiúsculo
     }, [])
 
     function excluir(id) {
@@ -26,13 +26,13 @@ export default function Visitantes() {
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
-                const visitantesAtualizados = visitantes.filter(item => item.id !== id)
-                localStorage.setItem('visitantes', JSON.stringify(visitantesAtualizados))
-                setVisitantes(visitantesAtualizados)
+                const timesAtualizados = times.filter(item => item.id !== id)
+                localStorage.setItem('Times', JSON.stringify(timesAtualizados))  // Alterado para 'Times' com 'T' maiúsculo
+                setTimes(timesAtualizados)
 
                 Swal.fire({
                     title: "Excluído!",
-                    text: "O visitante foi excluído com sucesso.",
+                    text: "O time foi excluído com sucesso.",
                     icon: "success"
                 })
             }
@@ -40,23 +40,23 @@ export default function Visitantes() {
     }
 
     return (
-        <Pagina titulo="Visitantes do Parque Aquático">
-            <Link href="/visitantes/form" className="btn btn-info mb-3">
-                <FaPlus className="me-2" /> Novo Visitante
+        <Pagina titulo="Times de Futebol">
+            <Link href="/times/form" className="btn btn-info mb-3">
+                <FaPlus className="me-2" /> Novo Time
             </Link>
 
             <Row>
-                {visitantes.map((item) => (
+                {times.map((item) => (
                     <Col key={item.id} md={4} className="mb-4">
                         <Card className="h-100 shadow-sm border-0">
                             <Card.Header className="bg-info text-white py-3">
                                 <div className="d-flex justify-content-between align-items-center">
                                     <h5 className="mb-0">
-                                        <FaUmbrellaBeach className="me-2" />
-                                        {item.nome}
+                                        <FaFootballBall className="me-2" />
+                                        {item.nomeTime}
                                     </h5>
                                     <div>
-                                        <Link href={'/visitantes/form/' + item.id} className="btn btn-outline-light btn-sm me-2">
+                                        <Link href={'/times/form/' + item.id} className="btn btn-outline-light btn-sm me-2">
                                             <FaEdit className="me-1" /> Editar
                                         </Link>
                                         <Button variant="outline-light" size="sm" onClick={() => excluir(item.id)}>
@@ -66,11 +66,11 @@ export default function Visitantes() {
                                 </div>
                             </Card.Header>
                             <Card.Body>
-                                <p className="mb-2"><FaIdCard className="me-2 text-info" /><strong>CPF:</strong> {item.cpf}</p>
-                                <p className="mb-2"><FaEnvelope className="me-2 text-info" /><strong>Email:</strong> {item.email}</p>
-                                <p className="mb-2"><FaPhone className="me-2 text-info" /><strong>Telefone:</strong> {item.telefone}</p>
-                                <p className="mb-2"><FaMapMarkerAlt className="me-2 text-info" /><strong>Endereço:</strong> {item.endereco}</p>
-                                <p className="mb-0"><FaBirthdayCake className="me-2 text-info" /><strong>Data de Nascimento:</strong> {item.data_nascimento}</p>
+                                <p className="mb-2"><strong>Técnico:</strong> {item.tecnico}</p>
+                                <p className="mb-2"><strong>Estadio:</strong> {item.estadio}</p>
+                                <p className="mb-2"><strong>Cidade:</strong> {item.cidade}</p>
+                                <p className="mb-2"><strong>Estado:</strong> {item.estado}</p>
+                                <p className="mb-0"><strong>Jogadores:</strong> {item.jogadores}</p>
                             </Card.Body>
                         </Card>
                     </Col>

@@ -7,25 +7,23 @@ import { useRouter } from "next/navigation"
 import { Button, Card, Col, Form, Row } from "react-bootstrap"
 import { FaCheck } from "react-icons/fa"
 import { MdOutlineArrowBack } from "react-icons/md"
-import { mask } from "remask"
 import { v4 } from "uuid"
 import { useEffect, useState } from "react"
 import apiLocalidade from "@/services/ApiLocalidade"
-import VisitanteValidator from "@/validators/VisitanteValidator"
+import TimeValidator from "@/validators/TimeValidator" // Crie um validador para o time (adapte conforme necessário)
+import { mask } from 'remask'  // Importe a função mask da biblioteca remask
 
 export default function Page({ params }) {
     const route = useRouter()
-    const visitantes = JSON.parse(localStorage.getItem('visitantes')) || []
-    const visitante = visitantes.find(item => item.id === params.id?.[0]) || {
-        nome: '',
-        email: '',
-        telefone: '',
-        cpf: '',
-        endereco: '',
+    const times = JSON.parse(localStorage.getItem('Times')) || []  // Alterado para 'Times' com 'T' maiúsculo
+    const time = times.find(item => item.id === params.id?.[0]) || {
+        nomeTime: '',
+        tecnico: '',
         cidade: '',
         estado: '',
-        cep: '',
-        data_nascimento: ''
+        estadio: '', // Alterado para estádio
+        jogadores: '',
+        data_criacao: '' // Adicionando campo para data de criação
     }
 
     const [estados, setEstados] = useState([])
@@ -38,135 +36,116 @@ export default function Page({ params }) {
     }, [])
 
     useEffect(() => {
-        if (visitante.estado) {
-            apiLocalidade.get(`estados/${visitante.estado}/municipios`).then(response => {
+        if (time.estado) {
+            apiLocalidade.get(`estados/${time.estado}/municipios`).then(response => {
                 setCidades(response.data)
             })
         }
-    }, [visitante.estado])
+    }, [time.estado])
 
     function salvar(dados) {
         if (params.id) {
-            const index = visitantes.findIndex(item => item.id === params.id[0])
-            visitantes[index] = { ...visitantes[index], ...dados }
+            const index = times.findIndex(item => item.id === params.id[0])
+            times[index] = { ...times[index], ...dados }
         } else {
             dados.id = v4()
-            visitantes.push(dados)
+            times.push(dados)
         }
 
-        localStorage.setItem('visitantes', JSON.stringify(visitantes))
-        route.push('/visitantes')
+        localStorage.setItem('Times', JSON.stringify(times))  // Alterado para 'Times' com 'T' maiúsculo
+        route.push('/times')
     }
 
     return (
-        <Pagina titulo={params.id ? "Alterar Visitante" : "Novo Visitante"}>
+        <Pagina titulo={params.id ? "Alterar Time" : "Novo Time"}>
             <Card className="border-0 shadow-sm">
                 <Card.Body>
                     <Formik
-                        initialValues={visitante}
+                        initialValues={time}
                         onSubmit={values => salvar(values)}
-                        validationSchema={VisitanteValidator}
+                        
                     >
                         {({ values, handleChange, handleSubmit, errors, touched, setFieldValue }) => (
                             <Form>
                                 <Row>
                                     <Col md={6}>
-                                        <Form.Group className="mb-3" controlId="nome">
-                                            <Form.Label className="fw-bold">Nome:</Form.Label>
+                                        <Form.Group className="mb-3" controlId="nomeTime">
+                                            <Form.Label className="fw-bold">Nome do Time:</Form.Label>
                                             <Form.Control
-                                                isInvalid={errors.nome && touched.nome}
+                                                isInvalid={errors.nomeTime && touched.nomeTime}
                                                 type="text"
-                                                name="nome"
-                                                value={values.nome}
+                                                name="nomeTime"
+                                                value={values.nomeTime}
                                                 onChange={handleChange}
                                             />
                                             <Form.Control.Feedback type="invalid">
-                                                {errors.nome}
+                                                {errors.nomeTime}
                                             </Form.Control.Feedback>
                                         </Form.Group>
 
-                                        <Form.Group className="mb-3" controlId="cpf">
-                                            <Form.Label className="fw-bold">CPF:</Form.Label>
+                                        <Form.Group className="mb-3" controlId="tecnico">
+                                            <Form.Label className="fw-bold">Técnico:</Form.Label>
                                             <Form.Control
-                                                isInvalid={errors.cpf && touched.cpf}
+                                                isInvalid={errors.tecnico && touched.tecnico}
                                                 type="text"
-                                                name="cpf"
-                                                value={values.cpf}
-                                                onChange={(e) => {
-                                                    setFieldValue('cpf', mask(e.target.value, '999.999.999-99'))
-                                                }}
-                                            />
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors.cpf}
-                                            </Form.Control.Feedback>
-                                        </Form.Group>
-
-                                        <Form.Group className="mb-3" controlId="email">
-                                            <Form.Label className="fw-bold">Email:</Form.Label>
-                                            <Form.Control
-                                                isInvalid={errors.email && touched.email}
-                                                type="email"
-                                                name="email"
-                                                value={values.email}
+                                                name="tecnico"
+                                                value={values.tecnico}
                                                 onChange={handleChange}
                                             />
                                             <Form.Control.Feedback type="invalid">
-                                                {errors.email}
+                                                {errors.tecnico}
                                             </Form.Control.Feedback>
                                         </Form.Group>
 
-                                        <Form.Group className="mb-3" controlId="telefone">
-                                            <Form.Label className="fw-bold">Telefone:</Form.Label>
+                                        {/* Alterado para Estádio */}
+                                        <Form.Group className="mb-3" controlId="estadio">
+                                            <Form.Label className="fw-bold">Estádio:</Form.Label>
                                             <Form.Control
-                                                isInvalid={errors.telefone && touched.telefone}
+                                                isInvalid={errors.estadio && touched.estadio}
                                                 type="text"
-                                                name="telefone"
-                                                value={values.telefone}
-                                                onChange={(e) => {
-                                                    setFieldValue('telefone', mask(e.target.value, '(99) 99999-9999'))
-                                                }}
+                                                name="estadio"
+                                                value={values.estadio}
+                                                onChange={handleChange}
                                             />
                                             <Form.Control.Feedback type="invalid">
-                                                {errors.telefone}
+                                                {errors.estadio}
+                                            </Form.Control.Feedback>
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3" controlId="jogadores">
+                                            <Form.Label className="fw-bold">Jogadores:</Form.Label>
+                                            <Form.Control
+                                                isInvalid={errors.jogadores && touched.jogadores}
+                                                type="text"
+                                                name="jogadores"
+                                                value={values.jogadores}
+                                                onChange={handleChange}
+                                                placeholder="Nome dos jogadores separados por vírgula"
+                                            />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.jogadores}
                                             </Form.Control.Feedback>
                                         </Form.Group>
                                     </Col>
 
                                     <Col md={6}>
-                                        <Form.Group className="mb-3" controlId="endereco">
-                                            <Form.Label className="fw-bold">Endereço:</Form.Label>
-                                            <Form.Control
-                                                isInvalid={errors.endereco && touched.endereco}
-                                                type="text"
-                                                name="endereco"
-                                                value={values.endereco}
-                                                onChange={handleChange}
-                                            />
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors.endereco}
-                                            </Form.Control.Feedback>
-                                        </Form.Group>
-
+                                        {/* Máscara para o campo Estado (UF) */}
                                         <Form.Group className="mb-3" controlId="estado">
-                                            <Form.Label className="fw-bold">Estado:</Form.Label>
-                                            <Form.Select
+                                            <Form.Label className="fw-bold">Estado (UF):</Form.Label>
+                                            <Form.Control
                                                 isInvalid={errors.estado && touched.estado}
+                                                type="text"
                                                 name="estado"
                                                 value={values.estado}
                                                 onChange={(e) => {
                                                     const estadoId = e.target.value
-                                                    setFieldValue('estado', estadoId)
+                                                    setFieldValue('estado', mask(estadoId, 'AA')) // Máscara para o UF (2 letras)
                                                     setFieldValue('cidade', '')
                                                     apiLocalidade.get(`estados/${estadoId}/municipios`).then(response => {
                                                         setCidades(response.data)
                                                     })
                                                 }}
-                                            >
-                                                <option value="">Selecione o estado...</option>
-                                                {estados.map(estado => (
-                                                    <option key={estado.id} value={estado.id}>{estado.nome}</option>
-                                                ))}
-                                            </Form.Select>
+                                            />
                                             <Form.Control.Feedback type="invalid">
                                                 {errors.estado}
                                             </Form.Control.Feedback>
@@ -190,33 +169,20 @@ export default function Page({ params }) {
                                             </Form.Control.Feedback>
                                         </Form.Group>
 
-                                        <Form.Group className="mb-3" controlId="cep">
-                                            <Form.Label className="fw-bold">CEP:</Form.Label>
+                                        {/* Máscara para o campo Data de Criação */}
+                                        <Form.Group className="mb-3" controlId="data_criacao">
+                                            <Form.Label className="fw-bold">Data de Criação:</Form.Label>
                                             <Form.Control
-                                                isInvalid={errors.cep && touched.cep}
+                                                isInvalid={errors.data_criacao && touched.data_criacao}
                                                 type="text"
-                                                name="cep"
-                                                value={values.cep}
+                                                name="data_criacao"
+                                                value={values.data_criacao}
                                                 onChange={(e) => {
-                                                    setFieldValue('cep', mask(e.target.value, '99999-999'))
+                                                    setFieldValue('data_criacao', mask(e.target.value, '99/99/9999')) // Máscara para a data
                                                 }}
                                             />
                                             <Form.Control.Feedback type="invalid">
-                                                {errors.cep}
-                                            </Form.Control.Feedback>
-                                        </Form.Group>
-
-                                        <Form.Group className="mb-3" controlId="data_nascimento">
-                                            <Form.Label className="fw-bold">Data de Nascimento:</Form.Label>
-                                            <Form.Control
-                                                isInvalid={errors.data_nascimento && touched.data_nascimento}
-                                                type="date"
-                                                name="data_nascimento"
-                                                value={values.data_nascimento}
-                                                onChange={handleChange}
-                                            />
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors.data_nascimento}
+                                                {errors.data_criacao}
                                             </Form.Control.Feedback>
                                         </Form.Group>
                                     </Col>
@@ -226,7 +192,7 @@ export default function Page({ params }) {
                                     <Button onClick={handleSubmit} variant="dark" className="me-2 px-4">
                                         <FaCheck className="me-2" /> Salvar
                                     </Button>
-                                    <Link href="/visitantes" className="btn btn-outline-dark px-4">
+                                    <Link href="/times" className="btn btn-outline-dark px-4">
                                         <MdOutlineArrowBack className="me-2" /> Voltar
                                     </Link>
                                 </div>

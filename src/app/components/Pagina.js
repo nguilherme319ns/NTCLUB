@@ -8,7 +8,7 @@ export default function Pagina(props) {
                 <Container>
                     <Navbar.Brand href="/" className="fs-4 fw-bold text-white">
                         <FaWater className="me-2" />
-                        NTCLUB
+                        NTCFUTEBOLCLUB
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
@@ -19,8 +19,8 @@ export default function Pagina(props) {
                             <Nav.Link href="/atracoes" className="fw-semibold text-white">
                                 <FaUmbrellaBeach className="me-1" /> Atrações
                             </Nav.Link>
-                            <Nav.Link href="/visitantes" className="fw-semibold text-white">
-                                <FaUsers className="me-1" /> Visitantes
+                            <Nav.Link href="/Times" className="fw-semibold text-white">
+                                <FaUsers className="me-1" /> Times
                             </Nav.Link>
                             <Nav.Link href="/servicosParque" className="fw-semibold text-white">
                                 <FaConciergeBell className="me-1" /> Serviços
